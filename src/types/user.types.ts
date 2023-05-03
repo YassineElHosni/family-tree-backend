@@ -1,4 +1,7 @@
+import { ObjectId } from "mongoose"
+
 export type UserType = {
+    _id?: ObjectId | string
     type?: "admin"
     email: string
     firstName: string
@@ -10,4 +13,10 @@ export type UserType = {
         code: number
         short: string
     }
+    password?: string
+}
+
+export type AuthUserType = {
+    _id?: string
+    type?: "admin"
 }

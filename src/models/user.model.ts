@@ -6,17 +6,17 @@ const mongoose = require("mongoose")
 const userSchema = mongoose.Schema(
     {
         type: {
-            enum: {
-                values: ["admin"],
-            },
+            type: String,
+            enum: ["admin", null],
+            default: null,
         },
         email: { type: String },
         firstName: { type: String },
         lastName: { type: String },
         gender: {
-            enum: {
-                values: ["female", "male"],
-            },
+            type: String,
+            enum: ["male", "female", null],
+            default: null,
         },
         birthday: { type: String },
         phoneNumber: {
@@ -24,6 +24,7 @@ const userSchema = mongoose.Schema(
             code: { type: Number },
             short: { type: String },
         },
+        password: { type: String },
     },
     {
         timestamps: true,
