@@ -9,7 +9,7 @@ export const getPartnershipAll = async (): Promise<ResponseType> => {
         const query = `
             query {
                 all(func: type("Partnership")) {
-                    id
+                    uid
                     partner1 {
                         id
                     }
