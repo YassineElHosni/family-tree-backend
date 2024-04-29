@@ -15,7 +15,8 @@ const schema: string = `
     Person.father: uid .
     Person.gender: string @index(hash) .
     Person.mother: uid .
-    Person.name: string @index(fulltext) .
+    Person.firstName: string @index(fulltext) .
+    Person.lastName: string @index(fulltext) .
     Person.partnerships: [uid] .
     PersonEvent.date: datetime @index(year) .
     PersonEvent.description: string .
@@ -33,7 +34,8 @@ const schema: string = `
     id: string @index(hash) .
     location: string @index(hash) .
     mother: string @index(hash) .
-    name: string @index(fulltext) .
+    firstName: string @index(fulltext) .
+    lastName: string @index(fulltext) .
     partner1: string @index(hash) .
     partner2: string @index(hash) .
     partnership: string @index(hash) .
@@ -57,7 +59,8 @@ const schema: string = `
     }
     type Person {
         id
-        name
+        firstName
+        lastName
         gender
         events
         father

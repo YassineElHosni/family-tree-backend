@@ -93,11 +93,13 @@ export const getPartnershipById = async (id: string): Promise<ResponseType> => {
                     uid
                     partner1 {
                         id
-                        name
+                        firstName
+                        lastName
                     }
                     partner2 {
                         id
-                        name
+                        firstName
+                        lastName
                     }
                 }
             }

@@ -11,15 +11,18 @@ export const getPersonAll = async (): Promise<ResponseType> => {
                 all(func: type("Person")) {
                     uid
                     id
-                    name
+                    firstName
+                    lastName
                     gender
                     father {
                         id
-                        name
+                        firstName
+                        lastName
                     }
                     mother {
                         id
-                        name
+                        firstName
+                        lastName
                     }
                     partnerships {
                         id
@@ -45,7 +48,8 @@ export const getPersonAll = async (): Promise<ResponseType> => {
 }
 
 export const createPerson = async (
-    name: string,
+    firstName: string,
+    lastName: string,
     gender: string,
     parentsPartnershipId?: string
 ): Promise<ResponseType> => {
@@ -54,9 +58,11 @@ export const createPerson = async (
         const person: any = {
             "dgraph.type": "Person",
             uid: "_:new-id",
-            "Person.name": name,
+            "Person.firstName": firstName,
+            "Person.lastName": lastName,
             "Person.gender": gender,
-            name: name,
+            firstName: firstName,
+            lastName: lastName,
             gender: gender,
         }
 
@@ -114,7 +120,8 @@ export const getPersonById = async (id: string): Promise<ResponseType> => {
             query person($id: string) {
                 person(func: uid($id)) {
                     uid
-                    name
+                    firstName
+                    lastName
                     gender
                 }
             }
@@ -138,15 +145,17 @@ export const getPersonById = async (id: string): Promise<ResponseType> => {
     }
 }
 
-export const updatePersonName = async (id: string, newName: string): Promise<ResponseType> => {
+export const updatePersonName = async (id: string, firstName: string, lastName: string): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
             "dgraph.type": "Person",
             uid: id,
-            name: newName,
-            "Person.name": newName,
+            firstName,
+            "Person.firstName": firstName,
+            lastName,
+            "Person.lastName": lastName,
         })
 
         await txn.mutate(mutation)

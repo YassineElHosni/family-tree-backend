@@ -64,20 +64,20 @@ export const setSchema = async () => {
 }
 
 const factoryDefault = async () => {
-    const response1: any = await createPerson("Abdelaziz EL HOSNI", "MALE")
+    const response1: any = await createPerson("Abdelaziz", "EL HOSNI", "MALE")
     const personId1 = response1?.data?.id
 
-    const response2: any = await createPerson("Widad DOUGHAILI", "FEMALE")
+    const response2: any = await createPerson("Widad", "DOUGHAILI", "FEMALE")
     const personId2 = response2?.data?.id
 
     const response3: any = await createPartnership(personId1, personId2)
     const partnershipId = response3?.data?.id
 
-    await createPerson("Yassine EL HOSNI", "MALE", partnershipId)
-    await createPerson("Hamza EL HOSNI", "MALE", partnershipId)
-    await createPerson("Zakariya EL HOSNI", "MALE", partnershipId)
+    await createPerson("Yassine", "EL HOSNI", "MALE", partnershipId)
+    await createPerson("Hamza", "EL HOSNI", "MALE", partnershipId)
+    await createPerson("Zakariya", "EL HOSNI", "MALE", partnershipId)
 
-    const response4: any = await createPerson("Lakbira BEN ACHIR", "FEMALE")
+    const response4: any = await createPerson("Lakbira", "BEN ACHIR", "FEMALE")
     const personId4 = response4?.data?.id
 
     const response5: any = await createPartnership(undefined, personId4)
