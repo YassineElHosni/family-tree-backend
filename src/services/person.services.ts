@@ -25,7 +25,12 @@ export const getPersonAll = async (): Promise<ResponseType> => {
                         lastName
                     }
                     partnerships {
-                        id
+                        uid
+                        partner1
+                        partner2
+                        children {
+                            uid
+                        }
                     }
                 }
             }
@@ -167,6 +172,36 @@ export const updatePersonName = async (id: string, firstName: string, lastName: 
         }
     } catch (error) {
         console.error("/updatePersonName - error", error)
+
+        return {
+            status: 500,
+            success: false,
+        }
+    } finally {
+        await txn.discard()
+    }
+}
+
+export const updatePersonPartnership = async (id: string, partnershipId: string): Promise<ResponseType> => {
+    const txn = dgraphInstance.newTxn()
+    try {
+        const mutation = new dgraph.Mutation()
+        mutation.setSetJson({
+            "dgraph.type": "Person",
+            uid: id,
+            partnerships: { uid: partnershipId },
+            "Person.partnerships": { uid: partnershipId },
+        })
+
+        await txn.mutate(mutation)
+        await txn.commit()
+
+        return {
+            status: 200,
+            success: true,
+        }
+    } catch (error) {
+        console.error("/updatePersonPartnership - error", error)
 
         return {
             status: 500,

@@ -16,6 +16,9 @@ export const getPartnershipAll = async (): Promise<ResponseType> => {
                     partner2 {
                         id
                     }
+                    children {
+                        uid
+                    }
                 }
             }
         `

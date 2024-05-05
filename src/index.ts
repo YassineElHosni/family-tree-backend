@@ -9,7 +9,13 @@ dotenv.config()
 
 import dgraphInstance from "./dgraph-instance"
 import routes from "./routes"
-import { createPerson, getPersonAll, getPersonById, updatePersonName } from "./services/person.services"
+import {
+    createPerson,
+    getPersonAll,
+    getPersonById,
+    updatePersonName,
+    updatePersonPartnership,
+} from "./services/person.services"
 import {
     addChildToPartnership,
     createPartnership,
@@ -44,10 +50,10 @@ app.use(
     })
 )
 
-mongoose
-    .connect(DATABASE)
-    .then(() => console.log("MongoDB connected!"))
-    .catch(error => console.error("/mongoose - error", error))
+// mongoose
+//     .connect(DATABASE)
+//     .then(() => console.log("MongoDB connected!"))
+//     .catch(error => console.error("/mongoose - error", error))
 // Initialize Dgraph client
 
 export const setSchema = async () => {
@@ -69,9 +75,10 @@ const factoryDefault = async () => {
 
     const response2: any = await createPerson("Widad", "DOUGHAILI", "FEMALE")
     const personId2 = response2?.data?.id
-
     const response3: any = await createPartnership(personId1, personId2)
     const partnershipId = response3?.data?.id
+    await updatePersonPartnership(personId1, partnershipId)
+    await updatePersonPartnership(personId2, partnershipId)
 
     await createPerson("Yassine", "EL HOSNI", "MALE", partnershipId)
     await createPerson("Hamza", "EL HOSNI", "MALE", partnershipId)
@@ -82,6 +89,7 @@ const factoryDefault = async () => {
 
     const response5: any = await createPartnership(undefined, personId4)
     const partnershipId2 = response5?.data?.id
+    await updatePersonPartnership(personId4, partnershipId2)
 
     await addChildToPartnership(partnershipId2, personId1, true)
 }
