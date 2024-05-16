@@ -10,10 +10,10 @@ export const getRelationshipAll = async (): Promise<ResponseType> => {
             query {
                 all(func: type("Relationship")) {
                     uid
-                    partner1 {
+                    husband {
                         id
                     }
-                    partner2 {
+                    wife {
                         id
                     }
                     children {
@@ -55,12 +55,12 @@ export const createRelationship = async (memberId1?: string, memberId2?: string)
         }
 
         if (memberId1) {
-            relationship["Relationship.partner1"] = { uid: memberId1 }
-            relationship.partner1 = memberId1
+            relationship["Relationship.husband"] = { uid: memberId1 }
+            relationship.husband = memberId1
         }
         if (memberId2) {
-            relationship["Relationship.partner2"] = { uid: memberId2 }
-            relationship.partner2 = memberId2
+            relationship["Relationship.wife"] = { uid: memberId2 }
+            relationship.wife = memberId2
         }
 
         const mutation = new dgraph.Mutation()
@@ -94,12 +94,12 @@ export const getRelationshipById = async (id: string): Promise<ResponseType> => 
             query one($id: string) {
                 one(func: uid($id)) @filter(type("Relationship")) {
                     uid
-                    partner1 {
+                    husband {
                         id
                         firstName
                         lastName
                     }
-                    partner2 {
+                    wife {
                         id
                         firstName
                         lastName
@@ -174,11 +174,11 @@ export const addChildToRelationship = async (
             if (response) {
                 const relationship: any = response.data
                 if (relationship) {
-                    if (relationship.partner1) {
-                        await addParent(memberId, relationship.partner1, "father")
+                    if (relationship.husband) {
+                        await addParent(memberId, relationship.husband, "father")
                     }
-                    if (relationship.partner2) {
-                        await addParent(memberId, relationship.partner2, "mother")
+                    if (relationship.wife) {
+                        await addParent(memberId, relationship.wife, "mother")
                     }
                 }
             }

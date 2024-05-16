@@ -26,8 +26,8 @@ export const getMemberAll = async (): Promise<ResponseType> => {
                     }
                     relationships {
                         uid
-                        partner1
-                        partner2
+                        husband
+                        wife
                         children {
                             uid
                         }
@@ -77,13 +77,13 @@ export const createMember = async (
             const relationship: any = response.data
 
             if (relationship) {
-                if (relationship.partner1) {
-                    member["Member.father"] = { uid: relationship.partner1 }
-                    member.father = relationship.partner1
+                if (relationship.husband) {
+                    member["Member.father"] = { uid: relationship.husband }
+                    member.father = relationship.husband
                 }
-                if (relationship.partner2) {
-                    member["Member.mother"] = { uid: relationship.partner2 }
-                    member.mother = relationship.partner2
+                if (relationship.wife) {
+                    member["Member.mother"] = { uid: relationship.wife }
+                    member.mother = relationship.wife
                 }
             }
         }

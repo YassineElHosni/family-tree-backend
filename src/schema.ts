@@ -2,8 +2,8 @@ const schema: string = `
     Relationship.children: [uid] .
     Relationship.endDate: datetime .
     Relationship.events: [uid] .
-    Relationship.partner1: uid .
-    Relationship.partner2: uid .
+    Relationship.husband: uid .
+    Relationship.wife: uid .
     Relationship.startDate: datetime .
     RelationshipEvent.date: datetime @index(year) .
     RelationshipEvent.description: string .
@@ -36,16 +36,16 @@ const schema: string = `
     mother: string @index(hash) .
     firstName: string @index(fulltext) .
     lastName: string @index(fulltext) .
-    partner1: string @index(hash) .
-    partner2: string @index(hash) .
+    husband: string @index(hash) .
+    wife: string @index(hash) .
     relationship: string @index(hash) .
     relationships: [uid] .
     member: string @index(hash) .
 
     type Relationship {
         id
-        partner1
-        partner2
+        husband
+        wife
         events
         children
     }
