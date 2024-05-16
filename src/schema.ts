@@ -1,15 +1,15 @@
 const schema: string = `
-    Partnership.children: [uid] .
-    Partnership.endDate: datetime .
-    Partnership.events: [uid] .
-    Partnership.partner1: uid .
-    Partnership.partner2: uid .
-    Partnership.startDate: datetime .
-    PartnershipEvent.date: datetime @index(year) .
-    PartnershipEvent.description: string .
-    PartnershipEvent.eventType: string @index(hash) .
-    PartnershipEvent.location: string @index(term) .
-    PartnershipEvent.partnership: uid .
+    Relationship.children: [uid] .
+    Relationship.endDate: datetime .
+    Relationship.events: [uid] .
+    Relationship.partner1: uid .
+    Relationship.partner2: uid .
+    Relationship.startDate: datetime .
+    RelationshipEvent.date: datetime @index(year) .
+    RelationshipEvent.description: string .
+    RelationshipEvent.eventType: string @index(hash) .
+    RelationshipEvent.location: string @index(term) .
+    RelationshipEvent.relationship: uid .
     Member.children: [uid] .
     Member.events: [uid] .
     Member.father: uid .
@@ -17,7 +17,7 @@ const schema: string = `
     Member.mother: uid .
     Member.firstName: string @index(fulltext) .
     Member.lastName: string @index(fulltext) .
-    Member.partnerships: [uid] .
+    Member.relationships: [uid] .
     MemberEvent.date: datetime @index(year) .
     MemberEvent.description: string .
     MemberEvent.eventType: string @index(hash) .
@@ -38,24 +38,24 @@ const schema: string = `
     lastName: string @index(fulltext) .
     partner1: string @index(hash) .
     partner2: string @index(hash) .
-    partnership: string @index(hash) .
-    partnerships: [uid] .
+    relationship: string @index(hash) .
+    relationships: [uid] .
     member: string @index(hash) .
 
-    type Partnership {
+    type Relationship {
         id
         partner1
         partner2
         events
         children
     }
-    type PartnershipEvent {
+    type RelationshipEvent {
         id
         eventType
         date
         location
         description
-        partnership
+        relationship
     }
     type Member {
         id
@@ -65,7 +65,7 @@ const schema: string = `
         events
         father
         mother
-        partnerships
+        relationships
     }
     type MemberEvent {
         id

@@ -14,15 +14,15 @@ import {
     getMemberAll,
     getMemberById,
     updateMemberName,
-    updateMemberPartnership,
+    updateMemberRelationship,
 } from "./services/member.services"
 import {
-    addChildToPartnership,
-    createPartnership,
-    deletePartnership,
-    getPartnershipAll,
-    getPartnershipById,
-} from "./services/partnership.services"
+    addChildToRelationship,
+    createRelationship,
+    deleteRelationship,
+    getRelationshipAll,
+    getRelationshipById,
+} from "./services/relationship.services"
 import schema from "./schema"
 
 const app: Application = express()
@@ -75,23 +75,23 @@ const factoryDefault = async () => {
 
     const response2: any = await createMember("Widad", "DOUGHAILI", "FEMALE")
     const memberId2 = response2?.data?.id
-    const response3: any = await createPartnership(memberId1, memberId2)
-    const partnershipId = response3?.data?.id
-    await updateMemberPartnership(memberId1, partnershipId)
-    await updateMemberPartnership(memberId2, partnershipId)
+    const response3: any = await createRelationship(memberId1, memberId2)
+    const relationshipId = response3?.data?.id
+    await updateMemberRelationship(memberId1, relationshipId)
+    await updateMemberRelationship(memberId2, relationshipId)
 
-    await createMember("Yassine", "EL HOSNI", "MALE", partnershipId)
-    await createMember("Hamza", "EL HOSNI", "MALE", partnershipId)
-    await createMember("Zakariya", "EL HOSNI", "MALE", partnershipId)
+    await createMember("Yassine", "EL HOSNI", "MALE", relationshipId)
+    await createMember("Hamza", "EL HOSNI", "MALE", relationshipId)
+    await createMember("Zakariya", "EL HOSNI", "MALE", relationshipId)
 
     const response4: any = await createMember("Lakbira", "BEN ACHIR", "FEMALE")
     const memberId4 = response4?.data?.id
 
-    const response5: any = await createPartnership(undefined, memberId4)
-    const partnershipId2 = response5?.data?.id
-    await updateMemberPartnership(memberId4, partnershipId2)
+    const response5: any = await createRelationship(undefined, memberId4)
+    const relationshipId2 = response5?.data?.id
+    await updateMemberRelationship(memberId4, relationshipId2)
 
-    await addChildToPartnership(partnershipId2, memberId1, true)
+    await addChildToRelationship(relationshipId2, memberId1, true)
 }
 
 async function main() {
@@ -100,7 +100,7 @@ async function main() {
     // await factoryDefault()
 
     const response1 = await getMemberAll()
-    const response2 = await getPartnershipAll()
+    const response2 = await getRelationshipAll()
 
     console.log("result1", response1?.data)
     console.log("result2", response2?.data)

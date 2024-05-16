@@ -2,7 +2,7 @@ import dgraph from "dgraph-js"
 
 import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
-import { addChildToPartnership, getPartnershipById } from "./partnership.services"
+import { addChildToRelationship, getRelationshipById } from "./relationship.services"
 
 export const getMemberAll = async (): Promise<ResponseType> => {
     try {
@@ -24,7 +24,7 @@ export const getMemberAll = async (): Promise<ResponseType> => {
                         firstName
                         lastName
                     }
-                    partnerships {
+                    relationships {
                         uid
                         partner1
                         partner2
@@ -56,7 +56,7 @@ export const createMember = async (
     firstName: string,
     lastName: string,
     gender: string,
-    parentsPartnershipId?: string
+    parentsRelationshipId?: string
 ): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
@@ -71,19 +71,19 @@ export const createMember = async (
             gender: gender,
         }
 
-        if (parentsPartnershipId) {
-            const response = await getPartnershipById(parentsPartnershipId)
+        if (parentsRelationshipId) {
+            const response = await getRelationshipById(parentsRelationshipId)
 
-            const partnership: any = response.data
+            const relationship: any = response.data
 
-            if (partnership) {
-                if (partnership.partner1) {
-                    member["Member.father"] = { uid: partnership.partner1 }
-                    member.father = partnership.partner1
+            if (relationship) {
+                if (relationship.partner1) {
+                    member["Member.father"] = { uid: relationship.partner1 }
+                    member.father = relationship.partner1
                 }
-                if (partnership.partner2) {
-                    member["Member.mother"] = { uid: partnership.partner2 }
-                    member.mother = partnership.partner2
+                if (relationship.partner2) {
+                    member["Member.mother"] = { uid: relationship.partner2 }
+                    member.mother = relationship.partner2
                 }
             }
         }
@@ -96,8 +96,8 @@ export const createMember = async (
 
         const memberId = response.getUidsMap().get("new-id")
 
-        if (parentsPartnershipId) {
-            await addChildToPartnership(parentsPartnershipId, memberId)
+        if (parentsRelationshipId) {
+            await addChildToRelationship(parentsRelationshipId, memberId)
         }
 
         return {
@@ -182,15 +182,15 @@ export const updateMemberName = async (id: string, firstName: string, lastName: 
     }
 }
 
-export const updateMemberPartnership = async (id: string, partnershipId: string): Promise<ResponseType> => {
+export const updateMemberRelationship = async (id: string, relationshipId: string): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
             "dgraph.type": "Member",
             uid: id,
-            partnerships: { uid: partnershipId },
-            "Member.partnerships": { uid: partnershipId },
+            relationships: { uid: relationshipId },
+            "Member.relationships": { uid: relationshipId },
         })
 
         await txn.mutate(mutation)
@@ -201,7 +201,7 @@ export const updateMemberPartnership = async (id: string, partnershipId: string)
             success: true,
         }
     } catch (error) {
-        console.error("/updateMemberPartnership - error", error)
+        console.error("/updateMemberRelationship - error", error)
 
         return {
             status: 500,

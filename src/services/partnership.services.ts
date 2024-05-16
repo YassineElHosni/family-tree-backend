@@ -4,11 +4,11 @@ import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
 import { addParent } from "./member.services"
 
-export const getPartnershipAll = async (): Promise<ResponseType> => {
+export const getRelationshipAll = async (): Promise<ResponseType> => {
     try {
         const query = `
             query {
-                all(func: type("Partnership")) {
+                all(func: type("Relationship")) {
                     uid
                     partner1 {
                         id
@@ -30,7 +30,7 @@ export const getPartnershipAll = async (): Promise<ResponseType> => {
             data: response.getJson().all,
         }
     } catch (error) {
-        console.error("/getPartnershipAll - error", error)
+        console.error("/getRelationshipAll - error", error)
 
         return {
             status: 500,
@@ -39,7 +39,7 @@ export const getPartnershipAll = async (): Promise<ResponseType> => {
     }
 }
 
-export const createPartnership = async (memberId1?: string, memberId2?: string): Promise<ResponseType> => {
+export const createRelationship = async (memberId1?: string, memberId2?: string): Promise<ResponseType> => {
     if (!memberId1 && !memberId2) {
         return {
             status: 400,
@@ -49,22 +49,22 @@ export const createPartnership = async (memberId1?: string, memberId2?: string):
 
     const txn = dgraphInstance.newTxn()
     try {
-        const partnership: any = {
-            "dgraph.type": "Partnership",
+        const relationship: any = {
+            "dgraph.type": "Relationship",
             uid: "_:new-id",
         }
 
         if (memberId1) {
-            partnership["Partnership.partner1"] = { uid: memberId1 }
-            partnership.partner1 = memberId1
+            relationship["Relationship.partner1"] = { uid: memberId1 }
+            relationship.partner1 = memberId1
         }
         if (memberId2) {
-            partnership["Partnership.partner2"] = { uid: memberId2 }
-            partnership.partner2 = memberId2
+            relationship["Relationship.partner2"] = { uid: memberId2 }
+            relationship.partner2 = memberId2
         }
 
         const mutation = new dgraph.Mutation()
-        mutation.setSetJson(partnership)
+        mutation.setSetJson(relationship)
 
         const response = await txn.mutate(mutation)
         await txn.commit()
@@ -77,7 +77,7 @@ export const createPartnership = async (memberId1?: string, memberId2?: string):
             },
         }
     } catch (error) {
-        console.error("/createPartnership - error", error)
+        console.error("/createRelationship - error", error)
 
         return {
             status: 500,
@@ -88,11 +88,11 @@ export const createPartnership = async (memberId1?: string, memberId2?: string):
     }
 }
 
-export const getPartnershipById = async (id: string): Promise<ResponseType> => {
+export const getRelationshipById = async (id: string): Promise<ResponseType> => {
     try {
         const query = `
             query one($id: string) {
-                one(func: uid($id)) @filter(type("Partnership")) {
+                one(func: uid($id)) @filter(type("Relationship")) {
                     uid
                     partner1 {
                         id
@@ -117,7 +117,7 @@ export const getPartnershipById = async (id: string): Promise<ResponseType> => {
             data: response.getJson().one[0],
         }
     } catch (error) {
-        console.error("/getPartnershipById - error", error)
+        console.error("/getRelationshipById - error", error)
 
         return {
             status: 500,
@@ -126,7 +126,7 @@ export const getPartnershipById = async (id: string): Promise<ResponseType> => {
     }
 }
 
-export const deletePartnership = async (id: string): Promise<ResponseType> => {
+export const deleteRelationship = async (id: string): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
         const mutation = new dgraph.Mutation()
@@ -140,7 +140,7 @@ export const deletePartnership = async (id: string): Promise<ResponseType> => {
             success: true,
         }
     } catch (error) {
-        console.error("/deletePartnership - error", error)
+        console.error("/deleteRelationship - error", error)
 
         return {
             status: 500,
@@ -151,8 +151,8 @@ export const deletePartnership = async (id: string): Promise<ResponseType> => {
     }
 }
 
-export const addChildToPartnership = async (
-    partnershipId: string,
+export const addChildToRelationship = async (
+    relationshipId: string,
     memberId: string,
     updateChild: boolean = false
 ): Promise<ResponseType> => {
@@ -160,9 +160,9 @@ export const addChildToPartnership = async (
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
-            "dgraph.type": "Partnership",
-            uid: partnershipId,
-            "Partnership.children": { uid: memberId },
+            "dgraph.type": "Relationship",
+            uid: relationshipId,
+            "Relationship.children": { uid: memberId },
             children: { uid: memberId },
         })
 
@@ -170,15 +170,15 @@ export const addChildToPartnership = async (
         await txn.commit()
 
         if (updateChild) {
-            const response = await getPartnershipById(partnershipId)
+            const response = await getRelationshipById(relationshipId)
             if (response) {
-                const partnership: any = response.data
-                if (partnership) {
-                    if (partnership.partner1) {
-                        await addParent(memberId, partnership.partner1, "father")
+                const relationship: any = response.data
+                if (relationship) {
+                    if (relationship.partner1) {
+                        await addParent(memberId, relationship.partner1, "father")
                     }
-                    if (partnership.partner2) {
-                        await addParent(memberId, partnership.partner2, "mother")
+                    if (relationship.partner2) {
+                        await addParent(memberId, relationship.partner2, "mother")
                     }
                 }
             }
@@ -189,7 +189,7 @@ export const addChildToPartnership = async (
             success: true,
         }
     } catch (error) {
-        console.error("/addChildToPartnership - error", error)
+        console.error("/addChildToRelationship - error", error)
 
         return {
             status: 500,
