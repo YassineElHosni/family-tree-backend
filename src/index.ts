@@ -10,12 +10,12 @@ dotenv.config()
 import dgraphInstance from "./dgraph-instance"
 import routes from "./routes"
 import {
-    createPerson,
-    getPersonAll,
-    getPersonById,
-    updatePersonName,
-    updatePersonPartnership,
-} from "./services/person.services"
+    createMember,
+    getMemberAll,
+    getMemberById,
+    updateMemberName,
+    updateMemberPartnership,
+} from "./services/member.services"
 import {
     addChildToPartnership,
     createPartnership,
@@ -70,28 +70,28 @@ export const setSchema = async () => {
 }
 
 const factoryDefault = async () => {
-    const response1: any = await createPerson("Abdelaziz", "EL HOSNI", "MALE")
-    const personId1 = response1?.data?.id
+    const response1: any = await createMember("Abdelaziz", "EL HOSNI", "MALE")
+    const memberId1 = response1?.data?.id
 
-    const response2: any = await createPerson("Widad", "DOUGHAILI", "FEMALE")
-    const personId2 = response2?.data?.id
-    const response3: any = await createPartnership(personId1, personId2)
+    const response2: any = await createMember("Widad", "DOUGHAILI", "FEMALE")
+    const memberId2 = response2?.data?.id
+    const response3: any = await createPartnership(memberId1, memberId2)
     const partnershipId = response3?.data?.id
-    await updatePersonPartnership(personId1, partnershipId)
-    await updatePersonPartnership(personId2, partnershipId)
+    await updateMemberPartnership(memberId1, partnershipId)
+    await updateMemberPartnership(memberId2, partnershipId)
 
-    await createPerson("Yassine", "EL HOSNI", "MALE", partnershipId)
-    await createPerson("Hamza", "EL HOSNI", "MALE", partnershipId)
-    await createPerson("Zakariya", "EL HOSNI", "MALE", partnershipId)
+    await createMember("Yassine", "EL HOSNI", "MALE", partnershipId)
+    await createMember("Hamza", "EL HOSNI", "MALE", partnershipId)
+    await createMember("Zakariya", "EL HOSNI", "MALE", partnershipId)
 
-    const response4: any = await createPerson("Lakbira", "BEN ACHIR", "FEMALE")
-    const personId4 = response4?.data?.id
+    const response4: any = await createMember("Lakbira", "BEN ACHIR", "FEMALE")
+    const memberId4 = response4?.data?.id
 
-    const response5: any = await createPartnership(undefined, personId4)
+    const response5: any = await createPartnership(undefined, memberId4)
     const partnershipId2 = response5?.data?.id
-    await updatePersonPartnership(personId4, partnershipId2)
+    await updateMemberPartnership(memberId4, partnershipId2)
 
-    await addChildToPartnership(partnershipId2, personId1, true)
+    await addChildToPartnership(partnershipId2, memberId1, true)
 }
 
 async function main() {
@@ -99,7 +99,7 @@ async function main() {
 
     // await factoryDefault()
 
-    const response1 = await getPersonAll()
+    const response1 = await getMemberAll()
     const response2 = await getPartnershipAll()
 
     console.log("result1", response1?.data)

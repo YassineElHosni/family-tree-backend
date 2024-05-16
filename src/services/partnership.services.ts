@@ -2,7 +2,7 @@ import dgraph from "dgraph-js"
 
 import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
-import { addParent } from "./person.services"
+import { addParent } from "./member.services"
 
 export const getPartnershipAll = async (): Promise<ResponseType> => {
     try {
@@ -39,8 +39,8 @@ export const getPartnershipAll = async (): Promise<ResponseType> => {
     }
 }
 
-export const createPartnership = async (personId1?: string, personId2?: string): Promise<ResponseType> => {
-    if (!personId1 && !personId2) {
+export const createPartnership = async (memberId1?: string, memberId2?: string): Promise<ResponseType> => {
+    if (!memberId1 && !memberId2) {
         return {
             status: 400,
             success: false,
@@ -54,13 +54,13 @@ export const createPartnership = async (personId1?: string, personId2?: string):
             uid: "_:new-id",
         }
 
-        if (personId1) {
-            partnership["Partnership.partner1"] = { uid: personId1 }
-            partnership.partner1 = personId1
+        if (memberId1) {
+            partnership["Partnership.partner1"] = { uid: memberId1 }
+            partnership.partner1 = memberId1
         }
-        if (personId2) {
-            partnership["Partnership.partner2"] = { uid: personId2 }
-            partnership.partner2 = personId2
+        if (memberId2) {
+            partnership["Partnership.partner2"] = { uid: memberId2 }
+            partnership.partner2 = memberId2
         }
 
         const mutation = new dgraph.Mutation()
@@ -153,7 +153,7 @@ export const deletePartnership = async (id: string): Promise<ResponseType> => {
 
 export const addChildToPartnership = async (
     partnershipId: string,
-    personId: string,
+    memberId: string,
     updateChild: boolean = false
 ): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
@@ -162,8 +162,8 @@ export const addChildToPartnership = async (
         mutation.setSetJson({
             "dgraph.type": "Partnership",
             uid: partnershipId,
-            "Partnership.children": { uid: personId },
-            children: { uid: personId },
+            "Partnership.children": { uid: memberId },
+            children: { uid: memberId },
         })
 
         await txn.mutate(mutation)
@@ -175,10 +175,10 @@ export const addChildToPartnership = async (
                 const partnership: any = response.data
                 if (partnership) {
                     if (partnership.partner1) {
-                        await addParent(personId, partnership.partner1, "father")
+                        await addParent(memberId, partnership.partner1, "father")
                     }
                     if (partnership.partner2) {
-                        await addParent(personId, partnership.partner2, "mother")
+                        await addParent(memberId, partnership.partner2, "mother")
                     }
                 }
             }

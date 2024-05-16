@@ -10,19 +10,19 @@ const schema: string = `
     PartnershipEvent.eventType: string @index(hash) .
     PartnershipEvent.location: string @index(term) .
     PartnershipEvent.partnership: uid .
-    Person.children: [uid] .
-    Person.events: [uid] .
-    Person.father: uid .
-    Person.gender: string @index(hash) .
-    Person.mother: uid .
-    Person.firstName: string @index(fulltext) .
-    Person.lastName: string @index(fulltext) .
-    Person.partnerships: [uid] .
-    PersonEvent.date: datetime @index(year) .
-    PersonEvent.description: string .
-    PersonEvent.eventType: string @index(hash) .
-    PersonEvent.location: string .
-    PersonEvent.person: uid .
+    Member.children: [uid] .
+    Member.events: [uid] .
+    Member.father: uid .
+    Member.gender: string @index(hash) .
+    Member.mother: uid .
+    Member.firstName: string @index(fulltext) .
+    Member.lastName: string @index(fulltext) .
+    Member.partnerships: [uid] .
+    MemberEvent.date: datetime @index(year) .
+    MemberEvent.description: string .
+    MemberEvent.eventType: string @index(hash) .
+    MemberEvent.location: string .
+    MemberEvent.member: uid .
     children: [uid] .
     date: datetime @index(year) .
     description: string @index(hash) .
@@ -40,7 +40,7 @@ const schema: string = `
     partner2: string @index(hash) .
     partnership: string @index(hash) .
     partnerships: [uid] .
-    person: string @index(hash) .
+    member: string @index(hash) .
 
     type Partnership {
         id
@@ -57,7 +57,7 @@ const schema: string = `
         description
         partnership
     }
-    type Person {
+    type Member {
         id
         firstName
         lastName
@@ -67,13 +67,13 @@ const schema: string = `
         mother
         partnerships
     }
-    type PersonEvent {
+    type MemberEvent {
         id
         eventType
         date
         location
         description
-        person
+        member
     }
 `
 

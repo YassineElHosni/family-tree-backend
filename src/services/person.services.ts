@@ -4,11 +4,11 @@ import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
 import { addChildToPartnership, getPartnershipById } from "./partnership.services"
 
-export const getPersonAll = async (): Promise<ResponseType> => {
+export const getMemberAll = async (): Promise<ResponseType> => {
     try {
         const query = `
             query {
-                all(func: type("Person")) {
+                all(func: type("Member")) {
                     uid
                     id
                     firstName
@@ -43,7 +43,7 @@ export const getPersonAll = async (): Promise<ResponseType> => {
             data: response.getJson().all,
         }
     } catch (error) {
-        console.error("/getPersonAll - error", error)
+        console.error("/getMemberAll - error", error)
 
         return {
             status: 500,
@@ -52,7 +52,7 @@ export const getPersonAll = async (): Promise<ResponseType> => {
     }
 }
 
-export const createPerson = async (
+export const createMember = async (
     firstName: string,
     lastName: string,
     gender: string,
@@ -60,12 +60,12 @@ export const createPerson = async (
 ): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
-        const person: any = {
-            "dgraph.type": "Person",
+        const member: any = {
+            "dgraph.type": "Member",
             uid: "_:new-id",
-            "Person.firstName": firstName,
-            "Person.lastName": lastName,
-            "Person.gender": gender,
+            "Member.firstName": firstName,
+            "Member.lastName": lastName,
+            "Member.gender": gender,
             firstName: firstName,
             lastName: lastName,
             gender: gender,
@@ -78,37 +78,37 @@ export const createPerson = async (
 
             if (partnership) {
                 if (partnership.partner1) {
-                    person["Person.father"] = { uid: partnership.partner1 }
-                    person.father = partnership.partner1
+                    member["Member.father"] = { uid: partnership.partner1 }
+                    member.father = partnership.partner1
                 }
                 if (partnership.partner2) {
-                    person["Person.mother"] = { uid: partnership.partner2 }
-                    person.mother = partnership.partner2
+                    member["Member.mother"] = { uid: partnership.partner2 }
+                    member.mother = partnership.partner2
                 }
             }
         }
 
         const mutation = new dgraph.Mutation()
-        mutation.setSetJson(person)
+        mutation.setSetJson(member)
 
         const response = await txn.mutate(mutation)
         await txn.commit()
 
-        const personId = response.getUidsMap().get("new-id")
+        const memberId = response.getUidsMap().get("new-id")
 
         if (parentsPartnershipId) {
-            await addChildToPartnership(parentsPartnershipId, personId)
+            await addChildToPartnership(parentsPartnershipId, memberId)
         }
 
         return {
             status: 200,
             success: true,
             data: {
-                id: personId,
+                id: memberId,
             },
         }
     } catch (error) {
-        console.error("/createPerson - error", error)
+        console.error("/createMember - error", error)
 
         return {
             status: 500,
@@ -119,11 +119,11 @@ export const createPerson = async (
     }
 }
 
-export const getPersonById = async (id: string): Promise<ResponseType> => {
+export const getMemberById = async (id: string): Promise<ResponseType> => {
     try {
         const query = `
-            query person($id: string) {
-                person(func: uid($id)) {
+            query member($id: string) {
+                member(func: uid($id)) {
                     uid
                     firstName
                     lastName
@@ -138,10 +138,10 @@ export const getPersonById = async (id: string): Promise<ResponseType> => {
         return {
             status: 200,
             success: true,
-            data: response.getJson().person[0],
+            data: response.getJson().member[0],
         }
     } catch (error) {
-        console.error("/getPersonById - error", error)
+        console.error("/getMemberById - error", error)
 
         return {
             status: 500,
@@ -150,17 +150,17 @@ export const getPersonById = async (id: string): Promise<ResponseType> => {
     }
 }
 
-export const updatePersonName = async (id: string, firstName: string, lastName: string): Promise<ResponseType> => {
+export const updateMemberName = async (id: string, firstName: string, lastName: string): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
-            "dgraph.type": "Person",
+            "dgraph.type": "Member",
             uid: id,
             firstName,
-            "Person.firstName": firstName,
+            "Member.firstName": firstName,
             lastName,
-            "Person.lastName": lastName,
+            "Member.lastName": lastName,
         })
 
         await txn.mutate(mutation)
@@ -171,7 +171,7 @@ export const updatePersonName = async (id: string, firstName: string, lastName: 
             success: true,
         }
     } catch (error) {
-        console.error("/updatePersonName - error", error)
+        console.error("/updateMemberName - error", error)
 
         return {
             status: 500,
@@ -182,15 +182,15 @@ export const updatePersonName = async (id: string, firstName: string, lastName: 
     }
 }
 
-export const updatePersonPartnership = async (id: string, partnershipId: string): Promise<ResponseType> => {
+export const updateMemberPartnership = async (id: string, partnershipId: string): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
-            "dgraph.type": "Person",
+            "dgraph.type": "Member",
             uid: id,
             partnerships: { uid: partnershipId },
-            "Person.partnerships": { uid: partnershipId },
+            "Member.partnerships": { uid: partnershipId },
         })
 
         await txn.mutate(mutation)
@@ -201,7 +201,7 @@ export const updatePersonPartnership = async (id: string, partnershipId: string)
             success: true,
         }
     } catch (error) {
-        console.error("/updatePersonPartnership - error", error)
+        console.error("/updateMemberPartnership - error", error)
 
         return {
             status: 500,
@@ -213,7 +213,7 @@ export const updatePersonPartnership = async (id: string, partnershipId: string)
 }
 
 export const addParent = async (
-    personId: string,
+    memberId: string,
     parentId: string,
     type: "father" | "mother"
 ): Promise<ResponseType> => {
@@ -221,9 +221,9 @@ export const addParent = async (
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
-            "dgraph.type": "Person",
-            uid: personId,
-            [`Person.${type}`]: { uid: parentId },
+            "dgraph.type": "Member",
+            uid: memberId,
+            [`Member.${type}`]: { uid: parentId },
             [`${type}`]: parentId,
         })
         console.log("addParent json")
