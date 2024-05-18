@@ -2,7 +2,7 @@ import dgraph from "dgraph-js"
 
 import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
-import { addParent } from "./member.services"
+import { addParents } from "./member.services"
 
 export const getRelationshipAll = async (): Promise<ResponseType> => {
     try {
@@ -170,18 +170,7 @@ export const addChildToRelationship = async (
         await txn.commit()
 
         if (updateChild) {
-            const response = await getRelationshipById(relationshipId)
-            if (response) {
-                const relationship: any = response.data
-                if (relationship) {
-                    if (relationship.husband) {
-                        await addParent(memberId, relationship.husband, "father")
-                    }
-                    if (relationship.wife) {
-                        await addParent(memberId, relationship.wife, "mother")
-                    }
-                }
-            }
+            addParents(memberId, relationshipId)
         }
 
         return {

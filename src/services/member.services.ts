@@ -2,7 +2,7 @@ import dgraph from "dgraph-js"
 
 import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
-import { addChildToRelationship, getRelationshipById } from "./relationship.services"
+import { addChildToRelationship } from "./relationship.services"
 
 export const getMemberAll = async (): Promise<ResponseType> => {
     try {
@@ -14,16 +14,7 @@ export const getMemberAll = async (): Promise<ResponseType> => {
                     firstName
                     lastName
                     gender
-                    father {
-                        id
-                        firstName
-                        lastName
-                    }
-                    mother {
-                        id
-                        firstName
-                        lastName
-                    }
+                    parentsRelationship
                     relationships {
                         uid
                         husband
@@ -72,20 +63,7 @@ export const createMember = async (
         }
 
         if (parentsRelationshipId) {
-            const response = await getRelationshipById(parentsRelationshipId)
-
-            const relationship: any = response.data
-
-            if (relationship) {
-                if (relationship.husband) {
-                    member["Member.father"] = { uid: relationship.husband }
-                    member.father = relationship.husband
-                }
-                if (relationship.wife) {
-                    member["Member.mother"] = { uid: relationship.wife }
-                    member.mother = relationship.wife
-                }
-            }
+            member["Member.parentsRelationship"] = parentsRelationshipId
         }
 
         const mutation = new dgraph.Mutation()
@@ -212,21 +190,16 @@ export const updateMemberRelationship = async (id: string, relationshipId: strin
     }
 }
 
-export const addParent = async (
-    memberId: string,
-    parentId: string,
-    type: "father" | "mother"
-): Promise<ResponseType> => {
+export const addParents = async (memberId: string, relationshipId: string): Promise<ResponseType> => {
     const txn = dgraphInstance.newTxn()
     try {
         const mutation = new dgraph.Mutation()
         mutation.setSetJson({
             "dgraph.type": "Member",
             uid: memberId,
-            [`Member.${type}`]: { uid: parentId },
-            [`${type}`]: parentId,
+            "Member.parentsRelationship": { uid: relationshipId },
+            parentsRelationship: relationshipId,
         })
-        console.log("addParent json")
 
         await txn.mutate(mutation)
         await txn.commit()
@@ -236,7 +209,7 @@ export const addParent = async (
             success: true,
         }
     } catch (error) {
-        console.error("/addParent - error", error)
+        console.error("/addParents - error", error)
 
         return {
             status: 500,

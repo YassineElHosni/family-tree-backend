@@ -97,7 +97,7 @@ const factoryDefault = async () => {
 async function main() {
     await setSchema()
 
-    // await factoryDefault()
+    await factoryDefault()
 
     const response1 = await getMemberAll()
     const response2 = await getRelationshipAll()

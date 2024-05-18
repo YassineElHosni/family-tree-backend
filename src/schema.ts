@@ -12,9 +12,8 @@ const schema: string = `
     RelationshipEvent.relationship: uid .
     Member.children: [uid] .
     Member.events: [uid] .
-    Member.father: uid .
+    Member.parentsRelationship: uid .
     Member.gender: string @index(hash) .
-    Member.mother: uid .
     Member.firstName: string @index(fulltext) .
     Member.lastName: string @index(fulltext) .
     Member.relationships: [uid] .
@@ -28,12 +27,11 @@ const schema: string = `
     description: string @index(hash) .
     eventType: string @index(hash) .
     events: [uid] .
-    father: string @index(hash) .
+    parentsRelationship: string @index(hash) .
     friend: [uid] @reverse .
     gender: string @index(hash) .
     id: string @index(hash) .
     location: string @index(hash) .
-    mother: string @index(hash) .
     firstName: string @index(fulltext) .
     lastName: string @index(fulltext) .
     husband: string @index(hash) .
@@ -63,8 +61,7 @@ const schema: string = `
         lastName
         gender
         events
-        father
-        mother
+        parentsRelationship
         relationships
     }
     type MemberEvent {
