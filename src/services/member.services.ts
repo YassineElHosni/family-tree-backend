@@ -63,8 +63,10 @@ export const createMember = async (
         }
 
         if (parentsRelationshipId) {
-            member["Member.parentsRelationship"] = parentsRelationshipId
+            member["Member.parentsRelationship"] = { uid: parentsRelationshipId }
+            member.parentsRelationship = parentsRelationshipId
         }
+        console.log("/createMember - props", member)
 
         const mutation = new dgraph.Mutation()
         mutation.setSetJson(member)
