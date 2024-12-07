@@ -9,13 +9,7 @@ dotenv.config()
 
 import dgraphInstance from "./dgraph-instance"
 import routes from "./routes"
-import {
-    createMember,
-    getMemberAll,
-    getMemberById,
-    updateMemberName,
-    updateMemberRelationship,
-} from "./services/member.services"
+import { create, getAll, getMemberById, updateMemberName, updateMemberRelationship } from "./services/member.services"
 import {
     addChildToRelationship,
     createRelationship,
@@ -41,14 +35,18 @@ if (!CLIENT_URL) {
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use("/api", routes)
-
 app.use(
     cors({
+        origin: [CLIENT_URL, "http://localhost:3000"],
         credentials: true,
-        origin: [CLIENT_URL],
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
     })
 )
+
+app.use("/api", routes)
 
 // mongoose
 //     .connect(DATABASE)
@@ -70,21 +68,21 @@ export const setSchema = async () => {
 }
 
 const factoryDefault = async () => {
-    const response1: any = await createMember("Abdelaziz", "EL HOSNI", "MALE")
+    const response1: any = await create("Abdelaziz", "EL HOSNI", "MALE")
     const memberId1 = response1?.data?.id
 
-    const response2: any = await createMember("Widad", "DOUGHAILI", "FEMALE")
+    const response2: any = await create("Widad", "DOUGHAILI", "FEMALE")
     const memberId2 = response2?.data?.id
     const response3: any = await createRelationship(memberId1, memberId2)
     const relationshipId = response3?.data?.id
     await updateMemberRelationship(memberId1, relationshipId)
     await updateMemberRelationship(memberId2, relationshipId)
 
-    await createMember("Yassine", "EL HOSNI", "MALE", relationshipId)
-    await createMember("Hamza", "EL HOSNI", "MALE", relationshipId)
-    await createMember("Zakariya", "EL HOSNI", "MALE", relationshipId)
+    await create("Yassine", "EL HOSNI", "MALE", relationshipId)
+    await create("Hamza", "EL HOSNI", "MALE", relationshipId)
+    await create("Zakariya", "EL HOSNI", "MALE", relationshipId)
 
-    const response4: any = await createMember("Lakbira", "BEN ACHIR", "FEMALE")
+    const response4: any = await create("Lakbira", "BEN ACHIR", "FEMALE")
     const memberId4 = response4?.data?.id
 
     const response5: any = await createRelationship(undefined, memberId4)
@@ -99,7 +97,7 @@ async function main() {
 
     // await factoryDefault()
 
-    const response1 = await getMemberAll()
+    const response1 = await getAll()
     const response2 = await getRelationshipAll()
 
     console.log("result1", response1?.data)

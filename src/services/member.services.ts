@@ -4,7 +4,7 @@ import { ResponseType } from "../types/index.types"
 import dgraphInstance from "../dgraph-instance"
 import { addChildToRelationship } from "./relationship.services"
 
-export const getMemberAll = async (): Promise<ResponseType> => {
+export const getAll = async () => {
     try {
         const query = `
             query {
@@ -30,20 +30,18 @@ export const getMemberAll = async (): Promise<ResponseType> => {
 
         return {
             status: 200,
-            success: true,
             data: response.getJson().all,
         }
     } catch (error) {
-        console.error("/getMemberAll - error", error)
+        console.error("/member.getAll - error", error)
 
         return {
             status: 500,
-            success: false,
         }
     }
 }
 
-export const createMember = async (
+export const create = async (
     firstName: string,
     lastName: string,
     gender: string,
@@ -66,7 +64,7 @@ export const createMember = async (
             member["Member.parentsRelationship"] = { uid: parentsRelationshipId }
             member.parentsRelationship = parentsRelationshipId
         }
-        console.log("/createMember - props", member)
+        console.log("/create - props", member)
 
         const mutation = new dgraph.Mutation()
         mutation.setSetJson(member)
@@ -88,7 +86,7 @@ export const createMember = async (
             },
         }
     } catch (error) {
-        console.error("/createMember - error", error)
+        console.error("/create - error", error)
 
         return {
             status: 500,
@@ -127,6 +125,34 @@ export const getMemberById = async (id: string): Promise<ResponseType> => {
             status: 500,
             success: false,
         }
+    }
+}
+
+export const edit = async (id: string, firstName: string, lastName: string, gender: string): Promise<ResponseType> => {
+    const txn = dgraphInstance.newTxn()
+    try {
+        const mutation = new dgraph.Mutation()
+        mutation.setSetJson({
+            "dgraph.type": "Member",
+            uid: id,
+            firstName,
+            lastName,
+            gender,
+            "Member.firstName": firstName,
+            "Member.lastName": lastName,
+            "Member.gender": gender,
+        })
+
+        await txn.mutate(mutation)
+        await txn.commit()
+
+        return { status: 200 }
+    } catch (error) {
+        console.error("/member.edit - error", error)
+
+        return { status: 500 }
+    } finally {
+        await txn.discard()
     }
 }
 

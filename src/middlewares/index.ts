@@ -20,7 +20,11 @@ const createToken = (userId: string, type: string) => {
     return jwt.sign({ _id: userId, type }, JWT_SECRET, { expiresIn: "1h" })
 }
 
+/**
+ * @disabled
+ */
 const verifyToken = (req: IAuthRequest, res: Response, next: NextFunction) => {
+    return next()
     const token = req.headers["authorization"]
 
     if (!token) {
